@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mushroom Ranking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Draw</a>
+    <a href="meadow.html">Meadow</a>
+    <a href="rank.html" class="active">Rank</a>
+    <a href="profile.html">Profile</a>
+    <span id="nav-auth"></span>
+  </nav>
+
+  <div class="rank-container">
+    <h1 class="rank-title">Mushroom Ranking</h1>
+
+    <div class="rank-sort">
+      <button class="sort-btn active" data-sort="score-desc">Score &#9660;</button>
+      <button class="sort-btn" data-sort="recent">Recent</button>
+      <button class="sort-btn" data-sort="random">Random</button>
+      <button class="sort-btn" data-sort="my" id="my-mushroom-btn" style="display:none">My Mushroom</button>
+    </div>
+
+    <div class="rank-grid" id="rank-grid">
+      <!-- Cards injected by JS -->
+    </div>
+
+    <div class="rank-empty" id="rank-empty" style="display:none">
+      No mushrooms yet! <a href="index.html">Draw one</a> to get started.
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="delete-modal" style="display:none">
+    <div class="modal">
+      <h2>Delete Mushroom</h2>
+      <p>Are you sure you want to delete this mushroom?</p>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="delete-confirm" style="background:#c0392b">Delete</button>
+        <button class="modal-btn secondary" id="delete-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Modal -->
+  <div class="modal-overlay" id="report-modal" style="display:none">
+    <div class="modal">
+      <h2>Report Mushroom</h2>
+      <p>Why is this mushroom inappropriate?</p>
+      <input type="text" id="report-input" placeholder="Enter reason..." maxlength="200">
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="report-submit" disabled>Submit Report</button>
+        <button class="modal-btn secondary" id="report-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mushroom-utils.js"></script>
+  <script src="js/rank.js"></script>
+  <script>MushroomUtils.updateAuthNav();</script>
+</body>
+</html>

@@ -16,23 +16,27 @@
 
     // ===== Constants =====
     const GRAVITY = 0.4;
-    const GROUND_HEIGHT_RATIO = 0.18; // bottom 18% is ground
-    const MUSHROOM_SCALE = 0.6; // scale factor for drawn mushrooms
+    const MUSHROOM_SCALE = 0.25; // scale factor for drawn mushrooms
     const NUM_SEGMENTS = 5; // number of chain-follow segments
     const SPRING_STIFFNESS = 0.15;
     const SPRING_DAMPING = 0.75;
     const CAP_RATIO = 0.4; // top 40% is cap, bottom 60% is stem
-    const JUMP_VELOCITY_MIN = -8;
-    const JUMP_VELOCITY_MAX = -13;
+    const JUMP_VELOCITY_MIN = -5;
+    const JUMP_VELOCITY_MAX = -9;
     const JUMP_INTERVAL_MIN = 1500;
     const JUMP_INTERVAL_MAX = 4000;
-    const WALK_SPEED = 1.0; // base horizontal speed (left to right)
+    const WALK_SPEED = 0; // no sliding, mushrooms only move by hopping
+
+    const meadowParams = new URLSearchParams(window.location.search);
+    const meadowUserId = meadowParams.get("userId");
 
     let mushrooms = [];
     let rainDrops = [];
     let isRaining = false;
     let selectedMushroom = null;
     let animTime = 0;
+    let maxCapacity = 50;
+    const POLL_INTERVAL = 30000; // 30 seconds
 
     // ===== Resize =====
     function resize() {
@@ -43,68 +47,88 @@
     window.addEventListener("resize", resize);
 
     // ===== Ground Y =====
-    function getGroundY() {
-        return canvas.height * (1 - GROUND_HEIGHT_RATIO);
+    // Each mushroom gets its own groundY in the meadow area (below sky)
+    // Range: from 35% to 92% of canvas height (below sky)
+    function randomGroundY() {
+        return canvas.height * (0.35 + Math.random() * 0.57);
     }
 
     // ===== Load Mushrooms =====
-    function loadMushrooms() {
-        const data = MushroomUtils.getMushrooms();
+    function addMushroomToScene(m) {
+        // Skip if already loaded
+        if (mushrooms.find((existing) => existing.id === (m.docId || m.id))) return;
+
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            const groundY = randomGroundY();
+            const w = img.width * MUSHROOM_SCALE;
+            const h = img.height * MUSHROOM_SCALE;
+            const x = Math.random() * canvas.width - w;
+
+            // Create offscreen canvas for the mushroom
+            const mushroomCanvas = document.createElement("canvas");
+            mushroomCanvas.width = img.width;
+            mushroomCanvas.height = img.height;
+            const mctx = mushroomCanvas.getContext("2d");
+            mctx.drawImage(img, 0, 0);
+
+            // Chain-follow segments (from cap to base)
+            const segments = [];
+            for (let i = 0; i < NUM_SEGMENTS; i++) {
+                segments.push({ offsetY: 0, vy: 0 });
+            }
+
+            // At capacity: remove oldest mushroom
+            if (mushrooms.length >= maxCapacity) {
+                mushrooms.shift();
+            }
+
+            mushrooms.push({
+                id: m.docId || m.id,
+                data: m,
+                mushroomCanvas,
+                x,
+                baseY: groundY - h,
+                y: groundY - h,
+                vy: 0,
+                width: w,
+                height: h,
+                groundY,
+                isGrounded: true,
+                segments,
+                nextJumpTime: Date.now() + Math.random() * 2000 + 500,
+                enterTime: Date.now(),
+                enterDuration: 800,
+                vx: 0,
+                stiffness: SPRING_STIFFNESS + (Math.random() - 0.5) * 0.06,
+                damping: SPRING_DAMPING + (Math.random() - 0.5) * 0.1,
+                walkSpeed: WALK_SPEED + Math.random() * 0.3,
+            });
+        };
+        img.src = m.image;
+    }
+
+    async function loadMushrooms() {
+        const sortMode = meadowUserId ? "random" : "recent";
+        const data = await MushroomUtils.getMushrooms(sortMode, maxCapacity, meadowUserId);
+        const label = meadowUserId ? "My meadow: " : "";
         countLabel.textContent =
-            data.length + " mushroom" + (data.length !== 1 ? "s" : "");
+            label + data.length + " mushroom" + (data.length !== 1 ? "s" : "");
+        data.forEach(addMushroomToScene);
+    }
 
-        data.forEach((m) => {
-            // Check if already loaded
-            if (mushrooms.find((existing) => existing.id === m.id)) return;
-
-            const img = new Image();
-            img.onload = () => {
-                const w = img.width * MUSHROOM_SCALE;
-                const h = img.height * MUSHROOM_SCALE;
-                const groundY = getGroundY();
-                const x = Math.random() * canvas.width - w;
-
-                // Create offscreen canvas for the mushroom
-                const mushroomCanvas = document.createElement("canvas");
-                mushroomCanvas.width = img.width;
-                mushroomCanvas.height = img.height;
-                const mctx = mushroomCanvas.getContext("2d");
-                mctx.drawImage(img, 0, 0);
-
-                // Chain-follow segments (from cap to base)
-                const segments = [];
-                for (let i = 0; i < NUM_SEGMENTS; i++) {
-                    segments.push({ offsetY: 0, vy: 0 });
-                }
-
-                mushrooms.push({
-                    id: m.id,
-                    data: m,
-                    mushroomCanvas,
-                    x,
-                    baseY: groundY - h, // rest position (top of mushroom)
-                    y: groundY - h,
-                    vy: 0,
-                    width: w,
-                    height: h,
-                    groundY,
-                    isGrounded: true,
-                    segments,
-                    nextJumpTime: Date.now() + Math.random() * 2000 + 500,
-                    // Entrance animation
-                    enterTime: Date.now(),
-                    enterDuration: 800,
-                    // Slight horizontal drift
-                    vx: 0,
-                    // Per-mushroom physics variation
-                    stiffness: SPRING_STIFFNESS + (Math.random() - 0.5) * 0.06,
-                    damping: SPRING_DAMPING + (Math.random() - 0.5) * 0.1,
-                    // Steady walk speed (slight variation per mushroom)
-                    walkSpeed: WALK_SPEED + Math.random() * 0.3,
-                });
-            };
-            img.src = m.image;
-        });
+    // Poll for new mushrooms (skip polling for user-filtered meadow)
+    async function checkForNewMushrooms() {
+        if (meadowUserId) return;
+        const data = await MushroomUtils.getMushrooms("recent", 5);
+        data.forEach(addMushroomToScene);
+        // Update count
+        const total = await MushroomUtils.getMushrooms("recent", 1);
+        if (total.length > 0) {
+            countLabel.textContent =
+                mushrooms.length + " mushroom" + (mushrooms.length !== 1 ? "s" : "");
+        }
     }
 
     // ===== Physics Update =====
@@ -267,68 +291,81 @@
     }
 
     // ===== Background =====
+    const SKY_RATIO = 0.3; // top 30% is sky
+
     function drawBackground() {
         const w = canvas.width;
         const h = canvas.height;
-        const groundY = getGroundY();
+        const skyH = h * SKY_RATIO;
 
-        // Sky gradient
-        const skyGrad = ctx.createLinearGradient(0, 0, 0, groundY);
+        // --- Sky ---
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, skyH);
         skyGrad.addColorStop(0, "#87CEEB");
-        skyGrad.addColorStop(0.6, "#B0E0F0");
-        skyGrad.addColorStop(1, "#d4edda");
+        skyGrad.addColorStop(0.7, "#B0E0F0");
+        skyGrad.addColorStop(1, "#c8e6c0");
         ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, w, groundY);
+        ctx.fillRect(0, 0, w, skyH);
 
         // Clouds
-        drawClouds(animTime);
+        drawClouds(animTime, skyH);
 
-        // Ground gradient
-        const groundGrad = ctx.createLinearGradient(0, groundY, 0, h);
-        groundGrad.addColorStop(0, "#5a8f29");
-        groundGrad.addColorStop(0.3, "#4a7c22");
-        groundGrad.addColorStop(1, "#3a6618");
-        ctx.fillStyle = groundGrad;
-        ctx.fillRect(0, groundY, w, h - groundY);
+        // --- Grass meadow (fills rest of screen) ---
+        const meadowGrad = ctx.createLinearGradient(0, skyH, 0, h);
+        meadowGrad.addColorStop(0, "#a8d860"); // light green (far horizon)
+        meadowGrad.addColorStop(0.3, "#8cc840");
+        meadowGrad.addColorStop(0.7, "#6ab030");
+        meadowGrad.addColorStop(1, "#509828"); // darker green (near)
+        ctx.fillStyle = meadowGrad;
+        ctx.fillRect(0, skyH, w, h - skyH);
 
-        // Grass blades along ground line
-        drawGrass(groundY);
+        // Grass tufts scattered across the meadow
+        drawGrassTufts(skyH);
     }
 
-    function drawClouds(time) {
+    function drawClouds(time, skyH) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
         const clouds = [
-            { x: 100, y: 60, r: 30 },
-            { x: 130, y: 50, r: 40 },
-            { x: 160, y: 60, r: 30 },
-            { x: 400, y: 80, r: 25 },
-            { x: 425, y: 70, r: 35 },
-            { x: 450, y: 80, r: 25 },
-            { x: 700, y: 45, r: 28 },
-            { x: 725, y: 35, r: 38 },
-            { x: 755, y: 45, r: 28 },
+            { x: 100, y: 0.3, r: 30 },
+            { x: 130, y: 0.2, r: 40 },
+            { x: 160, y: 0.3, r: 30 },
+            { x: 400, y: 0.45, r: 25 },
+            { x: 425, y: 0.35, r: 35 },
+            { x: 450, y: 0.45, r: 25 },
+            { x: 700, y: 0.25, r: 28 },
+            { x: 725, y: 0.15, r: 38 },
+            { x: 755, y: 0.25, r: 28 },
         ];
         clouds.forEach((c) => {
             const drift = Math.sin(time * 0.0003 + c.x * 0.01) * 10;
             ctx.beginPath();
-            ctx.arc(c.x + drift, c.y, c.r, 0, Math.PI * 2);
+            ctx.arc(c.x + drift, c.y * skyH, c.r, 0, Math.PI * 2);
             ctx.fill();
         });
     }
 
-    function drawGrass(groundY) {
-        ctx.strokeStyle = "#6aa832";
-        ctx.lineWidth = 2;
-        for (let x = 0; x < canvas.width; x += 8) {
-            const h = 6 + Math.sin(x * 0.3) * 4;
-            const sway = Math.sin(animTime * 0.002 + x * 0.05) * 2;
+    function drawGrassTufts(skyH) {
+        const w = canvas.width;
+        const h = canvas.height;
+        const meadowH = h - skyH;
+
+        for (let i = 0; i < 800; i++) {
+            const seed = i * 137.5;
+            const gx = (seed * 7.3) % w;
+            // Grass only in meadow area (below sky)
+            const gy = skyH + ((seed * 3.7) % meadowH);
+            const t = (gy - skyH) / meadowH; // 0=far, 1=near
+            const bladeH = 8 + t * 20;
+            const sway = Math.sin(animTime * 0.002 + i * 0.8) * (1 + t * 2);
+
+            ctx.strokeStyle = `rgba(30,80,10,${0.35 + t * 0.4})`;
+            ctx.lineWidth = 1 + t * 1.5;
             ctx.beginPath();
-            ctx.moveTo(x, groundY);
+            ctx.moveTo(gx, gy);
             ctx.quadraticCurveTo(
-                x + sway,
-                groundY - h,
-                x + sway * 0.5,
-                groundY - h,
+                gx + sway,
+                gy - bladeH,
+                gx + sway * 0.5,
+                gy - bladeH,
             );
             ctx.stroke();
         }
@@ -354,7 +391,7 @@
             drop.y += drop.vy;
 
             // Hit ground or mushroom
-            if (drop.y > getGroundY()) {
+            if (drop.y > canvas.height) {
                 rainDrops.splice(i, 1);
                 continue;
             }
@@ -438,17 +475,29 @@
         }
     });
 
-    voteUpBtn.addEventListener("click", () => {
+    voteUpBtn.addEventListener("click", async () => {
         if (!selectedMushroom) return;
-        MushroomUtils.vote(selectedMushroom.id, "up");
+        const result = await MushroomUtils.vote(selectedMushroom.id, "up");
+        if (result && result.error === "login_required") {
+            if (confirm("Login required to vote. Go to login page?")) {
+                window.location.href = "login.html?redirect=meadow.html";
+            }
+            return;
+        }
         selectedMushroom.data.upvotes =
             (selectedMushroom.data.upvotes || 0) + 1;
         upCount.textContent = selectedMushroom.data.upvotes;
     });
 
-    voteDownBtn.addEventListener("click", () => {
+    voteDownBtn.addEventListener("click", async () => {
         if (!selectedMushroom) return;
-        MushroomUtils.vote(selectedMushroom.id, "down");
+        const result = await MushroomUtils.vote(selectedMushroom.id, "down");
+        if (result && result.error === "login_required") {
+            if (confirm("Login required to vote. Go to login page?")) {
+                window.location.href = "login.html?redirect=meadow.html";
+            }
+            return;
+        }
         selectedMushroom.data.downvotes =
             (selectedMushroom.data.downvotes || 0) + 1;
         downCount.textContent = selectedMushroom.data.downvotes;
@@ -501,6 +550,6 @@
     loadMushrooms();
     requestAnimationFrame(animate);
 
-    // Reload mushrooms periodically (in case new ones are added in another tab)
-    setInterval(loadMushrooms, 3000);
+    // Poll for new mushrooms every 30 seconds
+    setInterval(checkForNewMushrooms, POLL_INTERVAL);
 })();

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Mushroom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Draw</a>
+    <a href="meadow.html">Meadow</a>
+    <a href="rank.html">Rank</a>
+    <a href="profile.html">Profile</a>
+    <span id="nav-auth"></span>
+  </nav>
+
+  <div class="login-container">
+    <h1 class="login-title">Login</h1>
+
+    <div class="login-card">
+      <!-- Tab buttons -->
+      <div class="login-tabs">
+        <button class="login-tab active" data-tab="login">Login</button>
+        <button class="login-tab" data-tab="register">Register</button>
+      </div>
+
+      <!-- Login form -->
+      <form id="login-form" class="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit" class="login-submit">Login</button>
+      </form>
+
+      <!-- Register form (hidden by default) -->
+      <form id="register-form" class="login-form" style="display:none">
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="text" id="register-name" placeholder="Display name">
+        <input type="password" id="register-password" placeholder="Password (min 6 chars)" required minlength="6">
+        <button type="submit" class="login-submit">Register</button>
+      </form>
+
+      <div class="login-divider"><span>or</span></div>
+
+      <button id="google-login" class="google-btn">Sign in with Google</button>
+
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="js/firebase-init.js"></script>
+  <script src="js/mushroom-utils.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Reports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Draw</a>
+    <a href="meadow.html">Meadow</a>
+    <a href="rank.html">Rank</a>
+    <a href="profile.html">Profile</a>
+    <span id="nav-auth"></span>
+  </nav>
+
+  <div class="admin-container">
+    <h1 class="admin-title">Admin - Reported Mushrooms</h1>
+
+    <div class="admin-denied" id="admin-denied" style="display:none">
+      <h2>Access Denied</h2>
+      <p>You do not have admin privileges.</p>
+    </div>
+
+    <div class="admin-content" id="admin-content" style="display:none">
+      <div class="admin-grid" id="admin-grid"></div>
+      <div class="admin-empty" id="admin-empty" style="display:none">
+        No pending reports. All clear!
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mushroom-utils.js"></script>
+  <script src="js/admin.js"></script>
+  <script>MushroomUtils.updateAuthNav();</script>
+</body>
+</html>

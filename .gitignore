@@ -1,0 +1,19 @@
+google-cloud-sdk/
+google-cloud-cli-*.tar.gz
+
+# Dependencies
+node_modules/
+
+# Secrets & credentials
+*.pem
+*.key
+.env
+.env.*
+serviceAccountKey.json
+
+# Docs (personal setup notes)
+SETUP_GUIDE.md
+
+# OS files
+.DS_Store
+Thumbs.db

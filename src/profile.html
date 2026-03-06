@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">Draw</a>
+    <a href="meadow.html">Meadow</a>
+    <a href="rank.html">Rank</a>
+    <a href="profile.html" class="active">Profile</a>
+    <span id="nav-auth"></span>
+  </nav>
+
+  <div class="profile-container">
+    <!-- Not logged in prompt -->
+    <div class="profile-login-prompt" id="login-prompt" style="display:none">
+      <h2>Login Required</h2>
+      <p>You need to log in to view your profile.</p>
+      <a href="login.html" class="modal-btn primary">Login</a>
+    </div>
+
+    <!-- Profile content -->
+    <div class="profile-content" id="profile-content" style="display:none">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar">?</div>
+        <div class="profile-name-row">
+          <h1 class="profile-name" id="profile-name">Loading...</h1>
+          <button class="profile-edit-btn" id="edit-name-btn" style="display:none" title="Edit name">&#9998;</button>
+        </div>
+        <div class="profile-name-edit" id="name-edit" style="display:none">
+          <input type="text" id="name-input" maxlength="50" placeholder="Display name">
+          <button class="modal-btn primary" id="name-save">Save</button>
+          <button class="modal-btn secondary" id="name-cancel">Cancel</button>
+        </div>
+        <div class="profile-date" id="profile-date"></div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-mushrooms">0</div>
+          <div class="stat-label">Mushrooms</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-score">0</div>
+          <div class="stat-label">Total Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value stat-up" id="stat-upvotes">0</div>
+          <div class="stat-label">Upvotes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value stat-down" id="stat-downvotes">0</div>
+          <div class="stat-label">Downvotes</div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="profile-action-btn" id="my-mushrooms-btn">My Mushrooms</button>
+        <button class="profile-action-btn" id="my-meadow-btn">My Meadow</button>
+        <button class="profile-action-btn" id="share-btn">Share Profile</button>
+      </div>
+    </div>
+
+    <div class="profile-toast" id="profile-toast"></div>
+  </div>
+
+  <script src="js/mushroom-utils.js"></script>
+  <script src="js/profile.js"></script>
+  <script>MushroomUtils.updateAuthNav();</script>
+</body>
+</html>
