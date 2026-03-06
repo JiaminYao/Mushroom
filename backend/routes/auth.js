@@ -39,7 +39,7 @@ router.post("/register", async (req, res) => {
         const userRecord = await admin.auth().createUser({
             email,
             password,
-            displayName: displayName || email.split("@")[0],
+            displayName: (displayName || email.split("@")[0]).slice(0, 50),
         });
 
         // Migrate anonymous mushrooms

@@ -13,7 +13,7 @@ router.post("/", optionalAuth, upload.single("image"), async (req, res) => {
             return res.status(400).json({ error: "No image provided" });
         }
 
-        const artist = req.body.artist || "Anonymous";
+        const artist = (req.body.artist || "Anonymous").slice(0, 24);
         // Use authenticated uid, or anonymous userId from client, or generate new one
         const userId = req.user ? req.user.uid : (req.body.userId || uuidv4());
 

@@ -14,6 +14,10 @@ router.post("/report", requireAuth, async (req, res) => {
             return res.status(400).json({ error: "mushroomId and reason required" });
         }
 
+        if (reason.length > 200) {
+            return res.status(400).json({ error: "Reason too long (max 200 characters)" });
+        }
+
         const db = admin.firestore();
 
         // Check if mushroom exists
