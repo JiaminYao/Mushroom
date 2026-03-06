@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/mushroom-banner.gif" alt="Mushrooms bouncing across a meadow" width="100%">
+</p>
+
 # 🍄 Draw a Mushroom
 
 **Draw your own mushroom and plant it in a shared meadow with everyone else's creations!**
@@ -26,3 +30,7 @@ A free, community-driven drawing game where you sketch mushrooms, watch them gro
 No sign-up required — just draw and plant!
 
 👉 **[mushroom.jiaminyao.workers.dev](https://mushroom.jiaminyao.workers.dev)**
+
+---
+
+⭐ If you enjoyed this project, give it a star! It means a lot!
