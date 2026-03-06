@@ -30,7 +30,4 @@ A free, community-driven drawing game where you sketch mushrooms, watch them gro
 No sign-up required — just draw and plant!
 
 👉 **[mushroom.jiaminyao.workers.dev](https://mushroom.jiaminyao.workers.dev)**
-
----
-
 ⭐ If you enjoyed this project, give it a star! It means a lot!
