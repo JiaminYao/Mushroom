@@ -1073,13 +1073,12 @@ a:hover {
 @media (max-width: 480px) {
   /* Nav */
   .nav {
-    gap: 8px;
-    padding: 10px 12px;
-    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 8px;
   }
   .nav a {
-    font-size: 13px;
-    padding: 5px 10px;
+    font-size: 12px;
+    padding: 4px 8px;
   }
 
   /* Drawing Page */
@@ -1117,6 +1116,9 @@ a:hover {
   .stat-label { font-size: 11px; }
   .profile-actions { gap: 8px; }
   .profile-action-btn { padding: 10px 16px; font-size: 13px; }
+
+  /* Nav Auth */
+  #nav-auth a { font-size: 13px; padding: 5px 10px; }
 
   /* Login Page */
   .login-container { padding: 12px; }

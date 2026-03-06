@@ -8,10 +8,12 @@
 
 A free, community-driven drawing game where you sketch mushrooms, watch them grow in a living meadow, and vote on your favorites.
 
+👉 **[Play Now — No sign-up required!](https://mushroom.jiaminyao.workers.dev)**
+
 ## 🎮 How to Play
 
 1. 🎨 **Draw** — Use the canvas to create your unique mushroom masterpiece
-2. 🌱 **Plant it** — Give your mushroom a name and send it to the meadow
+2. 🌱 **Plant it** — Sign your name and send it to the meadow
 3. 🌿 **Explore** — Wander through the meadow and discover mushrooms drawn by players around the world
 4. 👍 **Vote** — Upvote your favorites and help the best mushrooms rise to the top
 5. 🏆 **Rank** — Compete for the #1 spot on the leaderboard
@@ -25,10 +27,15 @@ A free, community-driven drawing game where you sketch mushrooms, watch them gro
 - 👤 Optional account to track your mushroom collection
 - 🚩 Report system to keep the meadow friendly
 
-## 🕹️ Play Now
+## 🛠️ Tech Stack
 
-No sign-up required — just draw and plant!
-
-👉 **[mushroom.jiaminyao.workers.dev](https://mushroom.jiaminyao.workers.dev)**
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Vanilla HTML / CSS / JavaScript |
+| Backend | Node.js, Express |
+| Database | Firebase Firestore |
+| Storage | Firebase Cloud Storage |
+| Auth | Firebase Auth (Email + Google) |
+| Hosting | Cloudflare Workers (frontend), Google Cloud Run (backend) |
 
 ⭐ If you enjoyed this project, give it a star! It means a lot!
