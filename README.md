@@ -8,7 +8,7 @@
 
 A free, community-driven drawing game where you sketch mushrooms, watch them grow in a living meadow, and vote on your favorites.
 
-👉 **[Play Now — No sign-up required!](https://mushroom.jiaminyao.workers.dev)**
+👉 **[Play Now — No sign-up required!](https://drawamushroom.pages.dev)**
 
 ## 🎮 How to Play
 
